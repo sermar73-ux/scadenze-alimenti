@@ -11,8 +11,8 @@ android {
         applicationId = "it.sergio.scadenze"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
 
     // Chiave di prova fissa: così ogni APK nuovo si installa sopra il precedente

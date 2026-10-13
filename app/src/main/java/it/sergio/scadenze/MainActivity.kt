@@ -77,7 +77,7 @@ class MainActivity : Activity() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url
                 if (!request.isForMainFrame || url.host == HOST) return false
-                if (url.host == SITE) { openShopLink(url); return true }
+                if (url.host == SITE) { shopFragment(url).takeIf { it.isNotEmpty() }?.let { openShopLink(it) }; return true }
                 // Link esterni (per esempio una scheda prodotto) si aprono nel browser
                 return try { startActivity(Intent(Intent.ACTION_VIEW, url)); true } catch (e: ActivityNotFoundException) { true }
             }
@@ -127,26 +127,28 @@ class MainActivity : Activity() {
         Reminders.schedule(this)
 
         if (savedInstanceState != null) web.restoreState(savedInstanceState)
-        else web.loadUrl(HOME + shopFragment(intent))
+        else web.loadUrl(HOME + shopFragment(intent?.data))
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         val url = intent.data ?: return
-        if (url.host == SITE) openShopLink(url)
+        val frag = shopFragment(url)
+        if (frag.isNotEmpty()) openShopLink(frag)
     }
 
-    /** Il link della spesa della Tavola di Ottobre (…/#spesa=…) arriva alla pagina come sul sito. */
-    private fun openShopLink(url: Uri) {
-        val frag = url.encodedFragment ?: return
-        if (pageReady) web.evaluateJavascript("location.hash = " + JSONObject.quote("#$frag"), null)
-        else web.loadUrl("$HOME#$frag")
+    /** La lista della spesa arriva alla pagina come #spesa=… e la pagina la importa da sola, come sul sito. */
+    private fun openShopLink(frag: String) {
+        if (pageReady) web.evaluateJavascript("location.hash = " + JSONObject.quote(frag), null)
+        else web.loadUrl(HOME + frag)
     }
 
-    private fun shopFragment(intent: Intent?): String {
-        val url = intent?.data ?: return ""
-        if (url.host != SITE) return ""
-        return url.encodedFragment?.let { "#$it" } ?: ""
+    /** Dalla Tavola arriva scadenze://spesa?l=<lista>; dal link del sito https://…/#spesa=<lista>. */
+    private fun shopFragment(url: Uri?): String = when {
+        url == null -> ""
+        url.scheme == "scadenze" -> url.getQueryParameter("l")?.let { "#spesa=" + Uri.encode(it) } ?: ""
+        url.host == SITE -> url.encodedFragment?.takeIf { it.startsWith("spesa=") }?.let { "#$it" } ?: ""
+        else -> ""
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -361,7 +363,7 @@ class MainActivity : Activity() {
         private const val HOST = "appassets.androidplatform.net"
         private const val ORIGIN = "https://$HOST"
         private const val HOME = "$ORIGIN/assets/index.html"
-        private const val SITE = "enchanting-crumble-68c6ce.netlify.app"
+        private const val SITE = "dynamic-lollipop-3b2529.netlify.app"
         private const val REQ_FILE = 42
         private const val PERM_CAMERA_WEB = 1
         private const val PERM_CAMERA_PHOTO = 2

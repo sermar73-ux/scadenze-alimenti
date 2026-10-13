@@ -6,7 +6,7 @@ App Android per tenere d'occhio le scadenze di frigo e dispensa e la lista della
 - **scanner dei codici a barre e lettura della data dalla foto fatti sul telefono** (ML Kit), anche senza internet;
 - **avvisi di scadenza ogni mattina verso le 9, anche ad app chiusa**;
 - copia dei dati condivisibile (Drive, File, WhatsApp…) e ripristinabile;
-- apertura diretta dei link della spesa mandati dalla Tavola di Ottobre.
+- lista della spesa ricevuta direttamente dalla Tavola di Ottobre.
 
 ## Scaricare l'APK
 
@@ -22,11 +22,14 @@ l'app e la pubblica come nuova Release.
 I dati del sito restano nel browser. Sul sito: ⚙ Impostazioni → Copia dei dati → **Salva una copia**.
 Nell'app: ⚙ Impostazioni → **Ripristina da una copia** → scegli quel file.
 
-## Link della spesa dalla Tavola di Ottobre
+## Lista della spesa dalla Tavola di Ottobre
 
-Perché i link `https://enchanting-crumble-68c6ce.netlify.app/#spesa=…` si aprano nell'app e non nel browser:
-Impostazioni del telefono → App → Scadenze → **Apri per impostazione predefinita** → attiva
-"Apri link supportati" e aggiungi l'indirizzo del sito.
+Il pulsante "Aggiungi a Scadenze alimenti" della Tavola apre `scadenze://spesa?l=<lista>`:
+se l'app è installata la lista arriva qui, altrimenti si apre il sito
+`https://dynamic-lollipop-3b2529.netlify.app/#spesa=…` come prima.
+
+L'app sa aprire anche i link del sito: Impostazioni del telefono → App → Scadenze →
+**Apri in modalità predefinita** → "Apri i collegamenti supportati" → aggiungi l'indirizzo del sito.
 
 ## Aggiornare la pagina
 

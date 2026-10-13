@@ -26,12 +26,19 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Link della spesa mandati dalla Tavola di Ottobre (indirizzo del sito web) -->
+            <!-- Lista della spesa mandata dalla Tavola di Ottobre: scadenze://spesa?l=… -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="enchanting-crumble-68c6ce.netlify.app" />
+                <data android:scheme="scadenze" android:host="spesa" />
+            </intent-filter>
+            <!-- Link del sito delle Scadenze (…/#spesa=…), se assegnati all'app nelle impostazioni -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="dynamic-lollipop-3b2529.netlify.app" />
             </intent-filter>
         </activity>
 
