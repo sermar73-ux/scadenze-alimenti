@@ -1,6 +1,6 @@
 # Scadenze alimenti
 
-App Android per tenere d'occhio le scadenze di frigo e dispensa e la lista della spesa.
+App Android per tenere d'occhio le scadenze di frigo, freezer e dispensa e la lista della spesa.
 È la stessa pagina del sito (`app/src/main/assets/index.html`) dentro un'app vera, con in più:
 
 - **scanner dei codici a barre e lettura della data dalla foto fatti sul telefono** (ML Kit), anche senza internet;
