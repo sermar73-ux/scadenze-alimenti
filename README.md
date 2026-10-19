@@ -31,6 +31,12 @@ se l'app è installata la lista arriva qui, altrimenti si apre il sito
 L'app sa aprire anche i link del sito: Impostazioni del telefono → App → Scadenze →
 **Apri in modalità predefinita** → "Apri i collegamenti supportati" → aggiungi l'indirizzo del sito.
 
+## Sito su Netlify
+
+`sito/index.html` è la versione per il sito delle Scadenze (`dynamic-lollipop-3b2529.netlify.app`).
+Su Netlify: progetto dynamic-lollipop → Deploys → scarica l'ultimo deploy, sostituisci
+`index.html` con questo e trascina tutta la cartella in Deploys.
+
 ## Aggiornare la pagina
 
 Sostituisci `app/src/main/assets/index.html` con la nuova versione scaricata dal sito e fai push.
