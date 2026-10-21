@@ -30,6 +30,52 @@ object Reminders {
 
     fun saveData(c: Context, json: String) {
         prefs(c).edit().putString("data", json).apply()
+        ScadenzeWidget.refresh(c)
+    }
+
+    private data class Item(val name: String, val d: Long, val remind: Int, val expiry: LocalDate)
+
+    private fun data(c: Context): JSONObject? =
+        prefs(c).getString("data", null)?.let { try { JSONObject(it) } catch (e: Exception) { null } }
+
+    /** Gli alimenti salvati dalla pagina, con i giorni che mancano alla scadenza (negativi se scaduti). */
+    private fun items(o: JSONObject?, today: LocalDate): List<Item> {
+        val arr = o?.optJSONArray("items") ?: return emptyList()
+        val out = mutableListOf<Item>()
+        for (i in 0 until arr.length()) {
+            val it = arr.optJSONObject(i) ?: continue
+            val expiry = try { LocalDate.parse(it.optString("expiry")) } catch (e: Exception) { continue }
+            val remind = if (it.has("remind") && !it.isNull("remind")) it.optInt("remind", 3) else 3
+            out += Item(it.optString("name"), ChronoUnit.DAYS.between(today, expiry), remind, expiry)
+        }
+        return out.sortedBy { it.d }
+    }
+
+    /** Testo del widget: quanti sono in scadenza e i primi cinque per data. */
+    fun widgetText(c: Context): Pair<String, String> {
+        val all = items(data(c), LocalDate.now())
+        if (all.isEmpty()) return "Scadenze" to "Nessun alimento salvato.\nTocca per aprire l'app."
+        val soon = all.count { it.d <= it.remind }
+        val title = when (soon) {
+            0 -> "Tutto sotto controllo"
+            1 -> "1 alimento in scadenza"
+            else -> "$soon alimenti in scadenza"
+        }
+        return title to all.take(5).joinToString("\n") { "${it.name} · ${when {
+            it.d < -1 -> "scaduto da ${-it.d} giorni"
+            it.d == -1L -> "scaduto ieri"
+            else -> rel(it.d)
+        }}" }
+    }
+
+    /** Come nella pagina: un mese dopo l'ultima copia, o alla fine del rinvio scelto. */
+    private fun backupDue(o: JSONObject?, today: LocalDate): Boolean {
+        if (o == null || (o.optJSONArray("items")?.length() ?: 0) == 0) return false
+        val last = o.optString("lastBackup").takeIf { it.isNotEmpty() }?.let {
+            try { LocalDate.parse(it).plusDays(30).toString() } catch (e: Exception) { null }
+        } ?: ""
+        val from = maxOf(last, o.optString("backupSnooze"))
+        return from.isNotEmpty() && today.toString() >= from
     }
 
     fun canNotify(c: Context): Boolean {
@@ -39,7 +85,7 @@ object Reminders {
         return NotificationManagerCompat.from(c).areNotificationsEnabled()
     }
 
-    fun notify(c: Context, title: String, body: String) {
+    fun notify(c: Context, title: String, body: String, id: Int = 1) {
         if (!canNotify(c)) return
         val nm = c.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
@@ -60,7 +106,7 @@ object Reminders {
             .setAutoCancel(true)
             .build()
         try {
-            NotificationManagerCompat.from(c).notify(1, n)
+            NotificationManagerCompat.from(c).notify(id, n)
         } catch (e: SecurityException) {
         }
     }
@@ -84,20 +130,15 @@ object Reminders {
         val p = prefs(c)
         val today = LocalDate.now()
         if (p.getString("lastCheck", "") == today.toString()) return
-        val json = p.getString("data", null) ?: return
-        val items = try { JSONObject(json).optJSONArray("items") } catch (e: Exception) { null } ?: return
-        data class Soon(val name: String, val d: Long, val expiry: LocalDate)
-        val soon = mutableListOf<Soon>()
-        for (i in 0 until items.length()) {
-            val it = items.optJSONObject(i) ?: continue
-            val expiry = try { LocalDate.parse(it.optString("expiry")) } catch (e: Exception) { continue }
-            val d = ChronoUnit.DAYS.between(today, expiry)
-            val remind = if (it.has("remind") && !it.isNull("remind")) it.optInt("remind", 3) else 3
-            if (d in 0..remind.toLong()) soon += Soon(it.optString("name"), d, expiry)
-        }
+        val o = data(c) ?: return
+        val soon = items(o, today).filter { it.d in 0..it.remind.toLong() }
         p.edit().putString("lastCheck", today.toString()).apply()
+        // Promemoria della copia dei dati, al massimo una volta a settimana
+        if (backupDue(o, today) && p.getString("backupNotice", "")!! <= today.minusDays(7).toString()) {
+            p.edit().putString("backupNotice", today.toString()).apply()
+            notify(c, "Salva una copia dei tuoi dati", "È passato un mese dall'ultima copia. Apri l'app e tocca «Salva una copia»: se cambi telefono non perdi niente.", 2)
+        }
         if (soon.isEmpty()) return
-        soon.sortBy { it.d }
         val title = if (soon.size == 1) "${soon[0].name} scade ${rel(soon[0].d)}"
         else "${soon.size} prodotti stanno per scadere"
         val body = if (soon.size == 1)
@@ -114,7 +155,10 @@ object Reminders {
 }
 
 class ReminderReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) = Reminders.check(context)
+    override fun onReceive(context: Context, intent: Intent) {
+        Reminders.check(context)
+        ScadenzeWidget.refresh(context)
+    }
 }
 
 class BootReceiver : BroadcastReceiver() {

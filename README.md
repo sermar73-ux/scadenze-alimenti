@@ -5,7 +5,8 @@ App Android per tenere d'occhio le scadenze di frigo, freezer e dispensa e la li
 
 - **scanner dei codici a barre e lettura della data dalla foto fatti sul telefono** (ML Kit), anche senza internet;
 - **avvisi di scadenza ogni mattina verso le 9, anche ad app chiusa**;
-- copia dei dati condivisibile (Drive, File, WhatsApp…) e ripristinabile;
+- copia dei dati condivisibile (Drive, File, WhatsApp…) e ripristinabile, con promemoria mensile;
+- widget per la schermata Home con gli alimenti che scadono per primi;
 - lista della spesa ricevuta direttamente dalla Tavola di Ottobre.
 
 ## Scaricare l'APK
