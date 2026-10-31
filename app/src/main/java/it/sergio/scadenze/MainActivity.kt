@@ -151,6 +151,20 @@ class MainActivity : Activity() {
         else -> ""
     }
 
+    /** Indietro chiude prima la foto ingrandita; altrimenti fa quello di sempre. */
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (!pageReady) { defaultBack(); return }
+        web.evaluateJavascript("(window.__scadBack && window.__scadBack()) ? 'y' : 'n'") { r ->
+            if (r != "\"y\"") defaultBack()
+        }
+    }
+
+    private fun defaultBack() {
+        @Suppress("DEPRECATION")
+        super.onBackPressed()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         web.saveState(outState)
