@@ -10,6 +10,16 @@ App Android per tenere d'occhio le scadenze di frigo, freezer e dispensa e la li
 - lista della spesa ricevuta direttamente dalla Tavola di Ottobre.
 - foto dei prodotti ingrandibili: tocca la miniatura (con la lente) per vederla a schermo intero, con zoom a due dita;
   toccando il resto della riga si apre, come prima, la scheda della scadenza.
+- **Cucina**: scegli gli ingredienti di casa e Claude propone le ricette e le spiega passo passo,
+  con timer che suonano anche a schermo spento e ricettario offline.
+
+## Cucina con Claude
+
+La scheda Cucina c'è solo nell'app (non su `sito/index.html`) e chiama direttamente l'API di Claude.
+La chiave si inserisce in ⚙ Impostazioni → Cucina con Claude: resta nel telefono, in
+`localStorage` sotto `cucina.chiave.v1`, fuori da `casa.v1` e quindi fuori dalle copie dei dati.
+Non va mai scritta nel codice: questo repository è pubblico. Per lo stesso motivo le preferenze
+personali (dieta, cibi esclusi) stanno solo nelle Impostazioni dell'app.
 
 ## Scaricare l'APK
 
