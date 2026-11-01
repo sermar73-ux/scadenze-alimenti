@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Base64
+import android.view.WindowManager
 import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
@@ -342,6 +343,21 @@ class MainActivity : Activity() {
 
         @JavascriptInterface
         fun saveData(json: String) = Reminders.saveData(this@MainActivity, json)
+
+        /** Mentre si segue una ricetta lo schermo non si spegne. */
+        @JavascriptInterface
+        fun keepScreen(on: Boolean) {
+            runOnUiThread {
+                if (on) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
+        }
+
+        @JavascriptInterface
+        fun timerStart(id: Int, seconds: Int, label: String) = CookTimer.start(this@MainActivity, id, seconds, label)
+
+        @JavascriptInterface
+        fun timerCancel(id: Int) = CookTimer.cancel(this@MainActivity, id)
 
         @JavascriptInterface
         fun shareText(text: String, title: String) {
