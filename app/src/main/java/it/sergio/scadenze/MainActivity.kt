@@ -78,7 +78,7 @@ class MainActivity : Activity() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url
                 if (!request.isForMainFrame || url.host == HOST) return false
-                if (url.host == SITE) { shopFragment(url).takeIf { it.isNotEmpty() }?.let { openShopLink(it) }; return true }
+                if (url.host in SITES) { shopFragment(url).takeIf { it.isNotEmpty() }?.let { openShopLink(it) }; return true }
                 // Link esterni (per esempio una scheda prodotto) si aprono nel browser
                 return try { startActivity(Intent(Intent.ACTION_VIEW, url)); true } catch (e: ActivityNotFoundException) { true }
             }
@@ -148,7 +148,7 @@ class MainActivity : Activity() {
     private fun shopFragment(url: Uri?): String = when {
         url == null -> ""
         url.scheme == "scadenze" -> url.getQueryParameter("l")?.let { "#spesa=" + Uri.encode(it) } ?: ""
-        url.host == SITE -> url.encodedFragment?.takeIf { it.startsWith("spesa=") }?.let { "#$it" } ?: ""
+        url.host in SITES -> url.encodedFragment?.takeIf { it.startsWith("spesa=") }?.let { "#$it" } ?: ""
         else -> ""
     }
 
@@ -393,7 +393,8 @@ class MainActivity : Activity() {
         private const val HOST = "appassets.androidplatform.net"
         private const val ORIGIN = "https://$HOST"
         private const val HOME = "$ORIGIN/assets/index.html"
-        private const val SITE = "dynamic-lollipop-3b2529.netlify.app"
+        /** Il sito delle Scadenze: ora su GitHub Pages; il vecchio indirizzo Netlify resta riconosciuto. */
+        private val SITES = setOf("sermar73-ux.github.io", "dynamic-lollipop-3b2529.netlify.app")
         private const val REQ_FILE = 42
         private const val PERM_CAMERA_WEB = 1
         private const val PERM_CAMERA_PHOTO = 2

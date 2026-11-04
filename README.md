@@ -39,16 +39,16 @@ Nell'app: ⚙ Impostazioni → **Ripristina da una copia** → scegli quel file.
 
 Il pulsante "Aggiungi a Scadenze alimenti" della Tavola apre `scadenze://spesa?l=<lista>`:
 se l'app è installata la lista arriva qui, altrimenti si apre il sito
-`https://dynamic-lollipop-3b2529.netlify.app/#spesa=…` come prima.
+`https://sermar73-ux.github.io/scadenze-alimenti/#spesa=…`.
 
 L'app sa aprire anche i link del sito: Impostazioni del telefono → App → Scadenze →
 **Apri in modalità predefinita** → "Apri i collegamenti supportati" → aggiungi l'indirizzo del sito.
 
-## Sito su Netlify
+## Sito su GitHub Pages
 
-`sito/index.html` è la versione per il sito delle Scadenze (`dynamic-lollipop-3b2529.netlify.app`).
-Su Netlify: progetto dynamic-lollipop → Deploys → scarica l'ultimo deploy, sostituisci
-`index.html` con questo e trascina tutta la cartella in Deploys.
+`sito/index.html` è la versione per il sito delle Scadenze: https://sermar73-ux.github.io/scadenze-alimenti/
+Ogni push che cambia `sito/` la pubblica da sola (workflow **Pubblica il sito**, `.github/workflows/pages.yml`).
+Il vecchio sito su Netlify (`dynamic-lollipop-3b2529.netlify.app`) non si aggiorna più; l'app riconosce ancora i suoi link.
 
 ## Aggiornare la pagina
 
